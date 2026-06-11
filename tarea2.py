@@ -1,5 +1,9 @@
 import itertools
 import time
+import random
+
+#Parámetros globales de algoritmos genéticos
+tamanoPoblacion = 1
 
 def extraerInfo(nombreArchivo):
     """
@@ -160,13 +164,78 @@ def fuerzaBruta(numElementos, numSubconjuntos, costos, cobertura):
     print(f"Tiempo de ejecución: {tiempoFin - tiempoInicio} segundos")
     print("==============FIN==================\n")
 
+def compararSoluciones(solucion1, solucion2, numElementos, costos, cobertura):
+    """
+    Esta función compara dos soluciones e indica cuál es mejor según validez y costo.
+    Una solución válida siempre es mejor que una inválida.
+    Entre dos soluciones válidas, es mejor la de menor costo.
+    """
+    valida1 = solucionValida(solucion1, numElementos, cobertura)
+    valida2 = solucionValida(solucion2, numElementos, cobertura)
+    costo1 = costoSolucion(solucion1, costos)
+    costo2 = costoSolucion(solucion2, costos)
+
+    print(f"\nSolución 1: {solucion1}")
+    print(f"  Válida: {valida1} | Costo: {costo1}")
+    print(f"Solución 2: {solucion2}")
+    print(f"  Válida: {valida2} | Costo: {costo2}")
+
+    if valida1 and not valida2:
+        print("-> La Solución 1 es mejor (es válida y la Solución 2 no lo es).")
+    elif valida2 and not valida1:
+        print("-> La Solución 2 es mejor (es válida y la Solución 1 no lo es).")
+    elif not valida1 and not valida2:
+        print("-> Ninguna solución es válida.")
+    else:
+        if costo1 < costo2:
+            print(f"-> La Solución 1 es mejor (ambas válidas, costo {costo1} < {costo2}).")
+        elif costo2 < costo1:
+            print(f"-> La Solución 2 es mejor (ambas válidas, costo {costo2} < {costo1}).")
+        else:
+            print("-> Ambas soluciones son equivalentes (mismo costo y ambas válidas).")
+
+def individuoAleatorio(numSubconjuntos):
+    """
+    Genera un individuo aleatorio como vector binario de largo numSubconjuntos.
+    Cada bit indica si el subconjunto está seleccionado (1) o no (0).
+    """
+    return [random.randint(0, 1) for _ in range(numSubconjuntos)]
+
+def individuoValido(individuo, numElementos, cobertura):
+    """
+    Verifica si un individuo (vector binario) cubre todos los elementos del universo.
+    """
+    elementosCubiertos = set()
+    for i in range(len(individuo)):
+        if individuo[i] == 1:
+            for elemento in cobertura[i + 1]:
+                elementosCubiertos.add(elemento)
+ 
+    universo = set(range(1, numElementos + 1))
+    return universo.issubset(elementosCubiertos)
+ 
+def costoIndividuo(individuo, costos):
+    """
+    Calcula el costo total de un individuo sumando los costos de los subconjuntos activos.
+    """
+    costo = 0
+    for i in range(len(individuo)):
+        if individuo[i] == 1:
+            costo += costos[i + 1]
+    return costo
+
 ruta = "Instancias/"
 archivos = ["SCP_simple1.txt", "SCP_simple2.txt"]
 for archivo in archivos:
     nombreArchivo = ruta+archivo
     instancia = extraerInfo(nombreArchivo)
     numElementos, numSubconjuntos, costos, cobertura = instancia
-    
-    mostrarInstancia(numElementos, numSubconjuntos, costos, cobertura)
 
-    fuerzaBruta(numElementos, numSubconjuntos, costos, cobertura)
+    #mostrarInstancia(numElementos, numSubconjuntos, costos, cobertura)
+
+    #fuerzaBruta(numElementos, numSubconjuntos, costos, cobertura)
+
+    individuo = individuoAleatorio(numSubconjuntos)
+    print(f"\nindividuo ->{individuo}")
+    print(f"el individuo es válido?: {individuoValido(individuo,numElementos,cobertura)}")
+    print(f"costo del individuo: {costoIndividuo(individuo,costos)}")
