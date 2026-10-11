@@ -32,7 +32,7 @@ Los archivos de instancia deben estar en la **misma carpeta** que el programa.
 ### Ejecución
 
 ```bash
-python3 Tarea2.py
+python3 FranciscoCarrasco_SCP.py
 ```
 
 El programa ejecuta automáticamente todos los archivos definidos en la lista `archivos` al final del código. Por defecto corre sobre `SCP_simple1.txt`, `SCP_simple2.txt`, `01_facil.txt`, `02_medio.txt.txt` y `03_dificil.txt`.
